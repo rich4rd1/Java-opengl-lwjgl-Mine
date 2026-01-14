@@ -3,16 +3,12 @@
  */
 package minecraft;
 
+import minecraft.core.Game;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-        
-        Render janela = new Render();
-        janela.run();
+        Game game = new Game();
+        game.run();
     }
 }
