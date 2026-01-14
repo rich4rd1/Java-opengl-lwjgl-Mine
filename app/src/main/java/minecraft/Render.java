@@ -31,13 +31,17 @@ public class Render {
     // variaveis de localidade e velocidade
     private float x = 0.0f;
     private float y = 0.0f;
-    private float speed = 0.01f;
+    private float speed = 1.5f;
 
     // variáveis de movimentação 
     private boolean leftPressed;
     private boolean rightPressed;
     private boolean upPressed;
     private boolean downPressed;
+
+    //variáveis do deltaTime
+    private double lastTime;
+    private double deltaTime;
 
     public void init() {
 
@@ -59,8 +63,11 @@ public class Render {
         // permite o uso das funções do opengl
         org.lwjgl.opengl.GL.createCapabilities();
 
-        // Chama o metodo de inpus de teclado
+        // Chama o metodo de inputs de teclado
         setupInput();
+
+        // Inicia a captura de tempo para a variável lastTime 
+        lastTime = GLFW.glfwGetTime();
     }
 
     private void setupInput() {
@@ -92,18 +99,37 @@ public class Render {
     }
 
     private void update() {
+        // Captura e calculo do tempo atual 
+        double courrentTime = GLFW.glfwGetTime();
+        deltaTime = (courrentTime - lastTime);
+        lastTime = courrentTime;
+
+        //As variáveis dx e dy são adicionadas para retirar o "buff" de velocidade que se tinha ao pressionar duas teclas juntas 
+        float dx = 0f;
+        float dy = 0f;
+
         if (leftPressed) {
-            x -= speed;
+            dx -= 1f;
         }
         if (rightPressed) {
-            x += speed;
+            dx += 1f;
         }
         if (upPressed) {
-            y += speed;
+            dy += 1f;
         }
         if (downPressed) {
-            y -= speed;
+            dy -= 1f;
         }
+
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            dx /= length;
+            dy /= length;
+        }
+
+        x += dx * speed * deltaTime;
+        y += dy * speed * deltaTime;
+
     }
 
     //Método que desenha um quadrado na tela e permite-nos movê-lo 
@@ -111,10 +137,10 @@ public class Render {
         glColor3f(1.0f, 1.0f, 1.0f);
 
         glBegin(GL11.GL_QUADS);
-        glVertex2f(x - 0.1f,y - 0.1f);
-        glVertex2f(x + 0.1f,y - 0.1f);
-        glVertex2f(x + 0.1f,y + 0.1f);
-        glVertex2f(x - 0.1f,y + 0.1f);
+        glVertex2f(x - 0.1f, y - 0.1f);
+        glVertex2f(x + 0.1f, y - 0.1f);
+        glVertex2f(x + 0.1f, y + 0.1f);
+        glVertex2f(x - 0.1f, y + 0.1f);
         glEnd();
     }
 
@@ -159,7 +185,7 @@ public class Render {
     private void cleanup() {
         //Destroi a janela
         GLFW.glfwDestroyWindow(window);
-        
+
         //Finaliza as funções do opengl
         GLFW.glfwTerminate();
     }
