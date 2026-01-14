@@ -70,7 +70,6 @@ public class Render {
 
                 boolean pressed = action == GLFW_PRESS;
 
-
                 if (key == GLFW_KEY_A) {
                     leftPressed = pressed;
                 }
@@ -107,38 +106,38 @@ public class Render {
         }
     }
 
-    //Função que desenha um quadrado na tela e permite-nos movê-lo 
+    //Método que desenha um quadrado na tela e permite-nos movê-lo 
     private void renderSquare() {
         glColor3f(1.0f, 1.0f, 1.0f);
 
         glBegin(GL11.GL_QUADS);
-        glVertex2f(-0.1f, -0.1f);
-        glVertex2f(0.1f, -0.1f);
-        glVertex2f(0.1f, 0.1f);
-        glVertex2f(-0.1f, 0.1f);
+        glVertex2f(x - 0.1f,y - 0.1f);
+        glVertex2f(x + 0.1f,y - 0.1f);
+        glVertex2f(x + 0.1f,y + 0.1f);
+        glVertex2f(x - 0.1f,y + 0.1f);
         glEnd();
     }
 
     public void run() {
         init();
+        loop();
+        cleanup();
+
+    }
+
+    // Método de loop da janela
+    private void loop() {
 
         //criação do loop: Enquanto a janela não for fechada faça:
         //Todos os frames irão passar por esse loop
         while (!glfwWindowShouldClose(window)) {
-
             //Llimpa a tela da janela a cada frame impedindo da imagem ficar sobreposta no proximo frame(loop)
             //O color_buffer limpa so as cores, entt no proximo frame nos apenas "pintamos" de novo
             GL11.glClear(GL_COLOR_BUFFER_BIT);
-            // essa função muda a cor da tela, usaremos ela melhor futuramente
-            //GL11.glClearColor(0.5f, 0.8f, 1.0f, 0.0f);
-
             //update das variáveis de movimentação
             update();
-            //carrega as variáveis de movimentação
-            GL11.glLoadIdentity();
-            GL11.glTranslatef(x, y, 0.0f);
-
-            renderSquare();
+            //Desenha o quadrado na tela
+            render();
 
             //Aqui trocamos o buffer atual de exibição pelo que estava em espera
             //O openGL usa double buffering que é exatamente a ideia de enqualto um está sendo mostrado o outro está esperando sua vez.
@@ -148,8 +147,20 @@ public class Render {
             //Captura os eventos do sistema, teclado, mouse, cliques etc
             glfwPollEvents();
         }
+    }
 
+    // Chamada do quadrado
+    private void render() {
+        renderSquare();
+        //renderUI()
+        //renderWorld()
+    }
+
+    private void cleanup() {
+        //Destroi a janela
         GLFW.glfwDestroyWindow(window);
+        
+        //Finaliza as funções do opengl
         GLFW.glfwTerminate();
     }
 
